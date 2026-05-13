@@ -1,0 +1,420 @@
+---
+title: "Class05: Data Visualization with GGPLOT"
+author: Lea Sounthong
+format: pdf
+editor: visual
+---
+
+**Class Work:**
+
+# Title Here
+
+## Subtitle
+
+###Subtitle
+
+**Stuff in bold** not in bold *something italics*
+
+> Indent text
+
+```{r}
+#Generating numbers from 1-5 and adding 1 to each number
+x<-1:5
+x+1
+```
+
+Plot from class:
+
+```{r}
+#Generating scatter plot using the mpg dataset 
+library(ggplot2)
+ggplot(data=mpg) +
+  #Setting variables for axes and grouping 
+  aes(x=displ, y=hwy, shape=factor(cyl)) +
+  #Adding points to the plot
+  geom_point() + 
+  #Split plot into panels by cylinder number 
+  facet_wrap(~cyl) +
+  #Generating simple theme
+  theme_bw() +
+  #Generating labels and titles 
+  labs(title="Cars", subtitle= "hwy mileage", 
+       caption="my data", x="displacement", y="Mileage")
+```
+
+**Q1. For which phases is data visualization important for our scientific workflows?**
+
+All of the above
+
+**Q2. TRUE or FALSE? The ggplot2 package comes already installed with R?**
+
+FALSE
+
+
+
+**Part 5**
+
+**Q. Which plot types are typically NOT used to compare distributions of numeric variables?**
+
+Network graphs
+
+**Q. Which statement about data visualization with ggplot2 is incorrect?**
+
+ggplot2 is the only way to create plots in R
+
+**Part 6. Creating Scatter Plots**
+
+**Q. Which geometric layer should be used to create scatter plots in ggplot2?**
+
+geom_point()
+
+**Generating scatter plot for part 6**
+
+```{r}
+#Loading ggplot2 for creating plots
+library(ggplot2)
+#Create a scatter plot of the cars dataset
+ggplot(cars)+
+  #Define which variables used for x and y axes and making points blue 
+  aes(x=speed,y=dist)+geom_point(col="Blue")
+```
+
+**Q. In your own RStudio can you add a trend line layer to help show the relationship between the plot variables with the geom_smooth() function?**
+
+```{r}
+#Generating a trend line layer to show relationship between the plot variables 
+library(ggplot2)
+ggplot(cars) + 
+  aes(x = speed, y = dist) +
+  geom_point() +
+  geom_smooth()
+```
+
+**Q. Argue with geom_smooth() to add a straight line from a linear model without the shaded standard error region?**
+
+```{r}
+#Generating scatter plot of cars data with linear trend line
+library(ggplot2)
+ggplot(cars) + 
+  aes(x = speed, y = dist) +
+  geom_point() +
+  geom_smooth(method = "lm", se = FALSE)
+```
+
+**Q. Can you finish this plot by adding various label annotations with the labs() function and changing the plot look to a more conservative “black & white” theme by adding the theme_bw() function:**
+
+```{r}
+#Adding various label annotations and changing the plot to black and white theme
+library(ggplot2)
+ggplot(cars) + 
+  aes(x = speed, y = dist) +
+  geom_point() +
+  labs(title="Speed and Stopping Distances of Cars",
+       x="Speed (MPH)",
+       y="Stopping Distance (ft)",
+       subtitle = "Your informative subtitle text here",
+       caption="Dataset: 'cars'") +
+  geom_smooth(method="lm", se=FALSE) +
+  theme_bw()
+```
+
+**Adding more plot aesthetics through aes()**
+
+```{r}
+#Loading in gene expression dataset from online file 
+url <- "https://bioboot.github.io/bimm143_S20/class-material/up_down_expression.txt" 
+#Read the data into R and preview it
+genes <- read.delim(url)
+head(genes)
+```
+
+**Q. Use the nrow() function to find out how many genes are in this dataset. What is your answer?**
+
+```{r}
+#Counting total number of genes in the dataset
+nrow(genes)
+```
+
+**Q. Use the colnames() function and the ncol() function on the genes data frame to find out what the column names are (we will need these later) and how many columns there are. How many columns did you find?**
+
+```{r}
+#Displaying column names in the dataset
+colnames(genes)
+#Counting how many columns are present 
+ncol(genes)
+```
+
+**Q. Use the table() function on the State column of this data.frame to find out how many ‘up’ regulated genes there are. What is your answer?**
+
+```{r}
+#Counting how many genes are in each category
+table(genes$State)
+```
+
+**Q. Using your values above and 2 significant figures. What fraction of total genes is up-regulated in this dataset?**
+
+```{r}
+#Calculating the percentage of each gene category
+round( table(genes$State)/nrow(genes) * 100, 2)
+```
+
+**Q. Complete the code below to produce the following plot**
+
+```{r}
+#Generating scatter plot of genes data set comparing Condition 1 and Condition 2
+ggplot(genes) + 
+  aes(x=Condition1, y=Condition2) +
+  geom_point()
+```
+
+```{r}
+#Adding State column to see the difference in expression values between conditions 
+ggplot(genes) + 
+  aes(x=Condition1, y=Condition2, col=State) +
+  geom_point()
+```
+
+```{r}
+#Adding another layer to explicitly specify color scale
+ggplot(genes) + 
+  aes(x=Condition1, y=Condition2, col=State) +
+  geom_point() +
+  scale_colour_manual( values=c("blue", "gray", "red"))
+```
+
+**Q. Nice, now add some plot annotations to the p object with the labs() function**
+
+```{r}
+#Adding plot annotations using labs()
+ggplot(genes) + 
+  aes(x=Condition1, y=Condition2, col=State) +
+  geom_point() +
+  scale_colour_manual( values=c("blue", "gray", "red")) +
+  labs(title="Gene Expression Changes Upon Drug Treatment",
+       x="Control (no drug)",
+       y="Drug Treatment")
+```
+
+**Part 7. Going Further**
+
+```{r}
+# File location online
+url <- "https://raw.githubusercontent.com/jennybc/gapminder/master/inst/extdata/gapminder.tsv"
+
+gapminder <- read.delim(url)
+```
+
+```{r}
+# install.packages("dplyr") 
+library(dplyr)
+
+gapminder_2007 <- gapminder %>% filter(year==2007)
+```
+
+**Q. Complete the code below to produce a first basic scater plot of this gapminder_2007 dataset:**
+
+```{r}
+#Generating scatter plot of gapminder_2007 dataset 
+ggplot(gapminder_2007) +
+  aes(x=gdpPercap, y=lifeExp) +
+  geom_point()
+```
+
+```{r}
+#Making the points slightly more transparent with alpha=0.4
+ggplot(gapminder_2007) +
+  aes(x=gdpPercap, y=lifeExp) +
+  geom_point(alpha=0.4)
+```
+
+```{r}
+#Mapping the continent variable to the point color aesthetic and the population pop
+#through the point size argument to aes() to obtain plot with 4 different variables
+ggplot(gapminder_2007) +
+  aes(x=gdpPercap, y=lifeExp, color=continent, size=pop) +
+  geom_point(alpha=0.5)
+```
+
+```{r}
+#Generating plot and color the point by the numeric variable population pop
+ggplot(gapminder_2007) + 
+  aes(x = gdpPercap, y = lifeExp, color = pop) +
+  geom_point(alpha=0.8)
+```
+
+```{r}
+#Plotting GDP per capita vs. the life expectancy and set the point size
+#based on the population of each country
+ggplot(gapminder_2007) + 
+  aes(x = gdpPercap, y = lifeExp, size = pop) +
+  geom_point(alpha=0.5)
+```
+
+```{r}
+#Reflect the actual population differences by the point size and 
+#using the scale_size_area() function 
+ggplot(gapminder_2007) + 
+  geom_point(aes(x = gdpPercap, y = lifeExp,
+                 size = pop), alpha=0.5) + 
+  scale_size_area(max_size = 10)
+```
+
+**Q. Can you adapt the code you have learned thus far to reproduce our gapminder scatter plot for the year 1957? What do you notice about this plot is it easy to compare with the one for 2007?**
+
+```{r}
+#Generating gapminder scatter plot for year 1957
+gapminder_1957 <- gapminder %>% filter(year==1957)
+
+ggplot(gapminder_1957) + 
+  aes(x = gdpPercap, y = lifeExp, color=continent,
+                 size = pop) +
+  geom_point(alpha=0.7) + 
+  scale_size_area(max_size = 10) 
+```
+
+**Q. Do the same steps above but include 1957 and 2007 in your input dataset for ggplot(). You should now include the layer facet_wrap(~year) to produce the following plot:**
+
+```{r}
+#Generating scatter plot to include both 1957 and 2007
+
+gapminder_1957 <- gapminder %>% filter(year==1957 | year==2007)
+
+ggplot(gapminder_1957) + 
+  geom_point(aes(x = gdpPercap, y = lifeExp, color=continent,
+                 size = pop), alpha=0.7) + 
+  scale_size_area(max_size = 10) +
+  facet_wrap(~year)
+```
+
+**Part 8: Bar Charts**
+
+```{r}
+#Generating the number of people in the five biggest countries by populatiion in 2007
+gapminder_top5 <- gapminder %>% 
+  filter(year==2007) %>% 
+  arrange(desc(pop)) %>% 
+  top_n(5, pop)
+
+gapminder_top5
+
+```
+
+```{r}
+#Generating bar chart with gapminder_top5 dataset
+ggplot(gapminder_top5) + 
+  geom_col(aes(x = country, y = pop))
+```
+
+**Q Create a bar chart showing the life expectancy of the five biggest countries by population in 2007.**
+
+```{r}
+# Generating bar chart with gapminder_top5 dataset
+ggplot(gapminder_top5) +
+  geom_col(aes(x = country, y = lifeExp))
+```
+
+```{r}
+#Filling the bars with color
+ggplot(gapminder_top5) + 
+  geom_col(aes(x = country, y = pop, fill = continent))
+```
+
+```{r}
+#Using numeric variable (life expectancy) to fill color
+ggplot(gapminder_top5) + 
+  geom_col(aes(x = country, y = pop, fill = lifeExp))
+```
+
+
+**Q. Plot population size by country. Create a bar chart showing the population (in millions) of the five biggest countries by population in 2007.**
+
+```{r}
+#Generating bar chart showing population (in millons) of the five biggest countries by population in 2007
+ggplot(gapminder_top5) +
+  aes(x=country, y=pop, fill=gdpPercap) +
+  geom_col()
+```
+
+```{r}
+#Changing the order of the bars
+ggplot(gapminder_top5) +
+  aes(x=reorder(country, -pop), y=pop, fill=gdpPercap) +
+  geom_col()
+```
+
+```{r}
+#Filling just by country
+ggplot(gapminder_top5) +
+  aes(x=reorder(country, -pop), y=pop, fill=country) +
+  geom_col(col="gray30") +
+  guides(fill="none")
+```
+
+**Flipping bar charts**
+
+```{r}
+#Loading dataset USArrests
+head(USArrests)
+```
+
+```{r}
+#Generating bar chart of USArrests
+USArrests$State <- rownames(USArrests)
+ggplot(USArrests) +
+  aes(x=reorder(State,Murder), y=Murder) +
+  geom_col() +
+  coord_flip()
+```
+
+```{r}
+#Plotting USArrests by using points and line segments 
+ggplot(USArrests) +
+  #Mapping variables
+  aes(x=reorder(State,Murder), y=Murder) +
+  geom_point() +
+  #Adding verticle line segments from 0 up to each state's murder rate
+  geom_segment(aes(x=State, 
+                   xend=State, 
+                   y=0, 
+                   yend=Murder), color="blue") +
+  #Flip the axes so states are on the y=axis
+  coord_flip()
+```
+
+**Part 9. Extensions: Animation**
+
+```{r}
+library(gapminder)
+library(gganimate)
+
+# Setup nice regular ggplot of the gapminder data
+ggplot(gapminder, aes(gdpPercap, lifeExp, size = pop, colour = country)) +
+  geom_point(alpha = 0.7, show.legend = FALSE) +
+  scale_colour_manual(values = country_colors) +
+  scale_size(range = c(2, 12)) +
+  scale_x_log10() +
+  # Facet by continent
+  facet_wrap(~continent) +
+  # Here comes the gganimate specific bits
+  labs(title = 'Year: {frame_time}', x = 'GDP per capita', y = 'life expectancy') +
+  transition_time(year) +
+  shadow_wake(wake_length = 0.1, alpha = FALSE)
+```
+
+**Part 10: Combining Plots**
+
+```{r}
+library(patchwork)
+
+# Setup some example plots 
+p1 <- ggplot(mtcars) + geom_point(aes(mpg, disp))
+p2 <- ggplot(mtcars) + geom_boxplot(aes(gear, disp, group = gear))
+p3 <- ggplot(mtcars) + geom_smooth(aes(disp, qsec))
+p4 <- ggplot(mtcars) + geom_bar(aes(carb))
+
+# Use patchwork to combine them here:
+(p1 | p2 | p3) /
+      p4
+```
+
+
